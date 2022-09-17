@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+    <!--引入了默认配置的xml文件-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--日志文件保存路径-->
+    <property name="LOG_FILE_PATH" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/logs}"/>
+    <!--引入了控制台输出格式的xml文件-->
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+
+    <!-- 控制台日志：输出全部日志到控制台 -->
+    <appender name="TIME_FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <!--日志名,指定最新的文件名，其他文件名使用FileNamePattern-->
+        <file>${LOG_FILE}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <!-- 当前运行的日志文件名从${LOG_FILE}读取，日志文件名为 application.log -->
+            <!-- 第二天运行就会把昨天得日志文件名称，修改成 application.log.yyyy-MM-dd.log -->
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--保留历史日志一个月时间-->
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- maxFileSize:这是活动文件的大小，默认值是10MB，测试时可改成1KB看效果 -->
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+    </appender>
+
+    <!-- 控制台输出日志级别 -->
+    <root>
+        <!--<level>:设置过滤级别-->
+        <!--指定了名字为"CONSOLE"的appender。如果按天生成改为ref="TIME_FILE"-->
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TIME_FILE"/>
+    </root>
+
+</configuration>
